@@ -1,0 +1,48 @@
+{
+  "name": "kk",
+  "version": "1.0.0",
+  "description": "PolkaDOT Indexer node",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "prepack": "rm -rf dist && npm build",
+    "test": "jest",
+    "codegen": "./node_modules/.bin/subql codegen",
+    "start:docker": "docker-compose pull && docker-compose up --remove-orphans",
+    "docker_debug_build": "docker build -t remotedebug .",
+    "docker_debug_run": "docker run -p9229:9229 remotedebug"
+  },
+  "homepage": "https://github.com/subquery/polkadot-subql-starter",
+  "repository": "github:subquery/polkadot-subql-starter",
+  "files": [
+    "dist",
+    "schema.graphql",
+    "project.yaml"
+  ],
+  "author": "Mario",
+  "license": "test",
+  "devDependencies": {
+    "@polkadot/api": "^9.10.5",
+    "@subql/cli": "^1.10.1",
+    "@subql/types": "latest",
+    "typescript": "^4.1.3"
+  },
+  "tasks": [
+    {
+      "type": "docker-run",
+      "label": "docker-run: debug",
+      "dependsOn": [
+        "docker-build"
+      ],
+      "dockerRun": {
+        "command": "nest start --debug 0.0.0.0:9229"
+      },
+      "node": {
+        "enableDebugging": true
+      }
+    }
+  ],
+  "dependencies": {
+    "node": "^19.6.0"
+  }
+}

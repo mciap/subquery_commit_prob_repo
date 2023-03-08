@@ -1,0 +1,104 @@
+specVersion: 1.0.0
+name: Polkadot Indexer
+version: 1.0.0
+runner:
+  node:
+    name: "@subql/node"
+    version: ">=1.0.0"
+  query:
+    name: "@subql/query"
+    version: "*"
+description: >-
+  #This project is being used to index Polkadot chain data related to
+  Simply Wallet Addresses
+repository: "https://github.com/subquery/subql-starter"
+schema:
+  file: ./schema.graphql
+network:
+  # The genesis hash of the network (hash of block 0)
+  chainId: "0x91b171bb158e2d3848fa23a9f1c25182fb8e20313b2c1eb49219da7a70ce90c3"
+  # This endpoint must be a public non-pruned archive node
+  # Public nodes may be rate limited, which can affect indexing speed
+  # When developing your project we suggest getting a private API key
+  # You can get them from OnFinality for free https://app.onfinality.io
+  # https://documentation.onfinality.io/support/the-enhanced-api-service
+  endpoint: "wss://rpc.polkadot.io"  #Parity's endpoint
+  #endpoint: "wss://polkadot.public.curie.radiumblock.co/ws#/accounts"
+  # Optionally provide the HTTP endpoint of a full chain dictionary to speed up processing
+  dictionary: "https://api.subquery.network/sq/subquery/polkadot-dictionary"
+dataSources:
+  - kind: substrate/Runtime
+    startBlock: 214000
+    mapping:
+      file: ./dist/index.js
+      handlers:
+        - handler: handleBalanceDeposits
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Deposit
+        - handler: handleBalanceTransfers
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Transfer
+        - handler: handleBalanceWithdrawal
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Withdraw
+        - handler: handleBalanceSlashed
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Slashed
+        - handler: handleBalanceSet
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: BalanceSet
+        - handler: handleDustLost
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: DustLost
+        - handler: handleEndowed
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Endowed
+        - handler: handleReserved
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Reserved
+        - handler: handleReserveRepatriated
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: ReserveRepatriated
+        - handler: handleUnreserved
+          kind: substrate/EventHandler
+          filter:
+            module: balances
+            method: Unreserved
+        - handler: handleStakingRewards
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Rewarded
+        - handler: handleStakingBonded
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Bonded
+        - handler: handleStakingUnbonded
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Unbonded
+        - handler: handleStakingWithdrawUnbonded
+          kind: substrate/EventHandler
+          filter:
+            module: staking
+            method: Withdrawn

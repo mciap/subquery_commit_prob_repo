@@ -1,0 +1,71 @@
+# To improve query performance, we strongly suggest adding indexes to any field that you plan to filter or sort by
+# Add the `@index` or `@index(unique: true)` annotation after any non-key field
+# https://academy.subquery.network/build/graphql.html#indexing-by-non-primary-key-field
+
+
+type PolkadotTransactionIndexer @entity {
+  id: ID! #This is the extrinsic hash
+  hash: String!
+  txType: TransactionType! 
+  custodian: Custodian! 
+  receiver: String 
+  sender: String 
+  amount: Float #The transaction amount, in native denom
+  fee: Float #The value for the fee 
+  chain: Chain! #FK to the Chain entity
+  txTimestamp: Date 
+  blockHeight: String 
+  blockHash: String 
+  ticker: Ticker! 
+  reservedBalance: Float #this is the account reserved balance
+  stakingBalance: Float #this is the misc frozen balance - we group it as taking balance but not necessarily staking 
+  transferableBalance: Float #This is the transferrable balance 
+}
+
+type PolkadotAddendumData @entity {
+  id: ID! #This is the extrinsic hash
+  hash: String!
+  delegator: String
+  validator: String
+  srcValidator: String
+  dstValidator: String
+  proposer: String
+  voter: String
+}
+
+type Chain @entity {
+  id: ID! 
+  name: String 
+  custodians: [Custodian]! @derivedFrom(field: "chain") # This is a virtual field used to get all the custodians of a chain
+  tickers: [Ticker]! @derivedFrom(field: "chain") # This is a virtual field used to get all the tickers of a chain - A chain can have multiple tickers
+  transactionTypes: [TransactionType]! @derivedFrom (field: "chain")#This is a virtual field used to get all the transactino types of a chain 
+}
+
+type Custodian @entity{
+  id: ID! 
+  name: String 
+  address: String #Hash address of the custodian/wallet/account
+  chain: Chain! 
+}
+
+type Ticker @entity{
+  id: ID!
+  name: String
+  code: String
+  exponent: Int
+  chain: Chain!
+}
+
+type TransactionType @entity {
+  id: ID!
+  description: String
+  drcrInd: DrCrIndicator!
+  chain: Chain!
+}
+
+type DrCrIndicator @entity{
+  id: ID!
+  description: String
+}
+
+
